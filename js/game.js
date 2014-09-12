@@ -30,8 +30,8 @@ var mainState = {
 
         // Call the 'jump' function when the spacekey is hit
         // @TODO Take audio input instead
-        var spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        spaceKey.onDown.add(this.jump, this); 
+        // var spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        // spaceKey.onDown.add(this.jump, this); 
 
         // Create a group of 20 pipes
         this.pipes = game.add.group();

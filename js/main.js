@@ -25,7 +25,7 @@
             }
             started = !started;
         }
-    });
+    }); 
 
     $('.test').on('change mousemove', function(event) {
         sourceNode.frequency.value = $(this).val();
