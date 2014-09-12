@@ -8,14 +8,18 @@
     window.audioContext = new AudioContext();
     window.analyser = audioContext.createAnalyser();
 
-    function updateGlobalFreq(freq) {
-        if (freq > 5000) {
-            freq = 5000;
-        } else if (freq < 80) {
-            freq = 80;
+    function updateGlobalFreq(freq, customMinFreq, customMaxFreq) {
+        var maxFreq = customMaxFreq || 5000,
+            minFreq =  customMinFreq|| 80;
+
+
+        if (freq > maxFreq) {
+            freq = maxFreq;
+        } else if (freq < minFreq) {
+            freq = minFreq;
         }
 
-        window.globalFreq = (freq - 80) / (5000 - 80) * 440;
+        window.globalFreq = (freq - minFreq) / (maxFreq - minFreq) * 440;
     }
 
     $('.tool-group').on('change', function(event) {
@@ -24,15 +28,24 @@
         if (value === 'slider') {
             destroyClap();
             destroyVoice();
+            destroyExternalAudio();
             initSlider();
         } else if (value === 'voice') {
             destroyClap();
             destroySlider();
+            destroyExternalAudio();
             initVoice();
         } else if (value === 'clap') {
             destroyVoice();
             destroySlider();
+            destroyExternalAudio();
             initClap();
+        } else if (value === 'external') {
+            destroyVoice();
+            destroySlider();
+            destroyVoice();
+            initExternalAudio();
+
         }
     });
 
@@ -200,6 +213,66 @@
 
 		window.clapEnabled = false;
         window.mediaStreamSource.disconnect(window.analyser);
+    }
+
+    // ================================ EXTERNAL AUDIO ================================
+    
+    function initExternalAudio() {
+            var theBuffer;
+            var isPlaying = false;
+
+            var request = new XMLHttpRequest();
+
+            request.open("GET", "my-name.mp3", true);
+
+            request.responseType = "arraybuffer";
+            request.onload = function() {
+              window.audioContext.decodeAudioData( request.response, function(buffer) { 
+                    theBuffer = buffer;
+                    
+                    var now = window.audioContext.currentTime;
+
+                    window.sourceNode = window.audioContext.createBufferSource();
+                    window.sourceNode.buffer = theBuffer;
+                    window.sourceNode.loop = true;
+
+                    window.sourceNode.connect( window.analyser );
+                    window.analyser.connect( window.audioContext.destination );
+                    window.sourceNode.start( now );
+                    isPlaying = true;
+
+
+                    window.intervalId = setInterval(function() {
+
+                        window.analyser.getByteTimeDomainData( buf );
+
+                        var volume = getAverageVolume(buf);
+                        console.log(volume);
+
+                        //var ac = autoCorrelate( buf, window.audioContext.sampleRate );
+
+                        //var freq = ac === -1 ? 440 : ac;
+
+                        // console.log(freq)
+                        updateGlobalFreq(volume, 120, 130);
+
+
+                    }, 50);
+
+                });
+            }
+            request.send();
+    }
+
+    function destroyExternalAudio(){
+        //stop playing and return
+        window.sourceNode.stop(0)
+        window.sourceNode.disconnect(window.analyser );
+        window.analyser.disconnect(window.audioContext.destination );
+
+        if (window.intervalId) {
+            window.clearInterval(window.intervalId);
+        }
     }
 
 }());
