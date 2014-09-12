@@ -26,7 +26,6 @@ var mainState = {
         
         // Add gravity to the bird to make it fall
         game.physics.arcade.enable(this.bird);
-        this.bird.body.gravity.y = 1000; 
 
         // Call the 'jump' function when the spacekey is hit
         // @TODO Take audio input instead
@@ -51,6 +50,10 @@ var mainState = {
         // If the bird is out of the world (too high or too low), call the 'restartGame' function
         if (this.bird.inWorld == false)
             this.restartGame(); 
+
+        // The frequency can be from 80 - 5000, so we find out the % and position the bird relative to that.
+        this.previousBirdPosition = this.bird.body.y;
+        this.bird.body.y = (sourceNode.frequency.value - 80) / (5000 - 80) * 440;
 
         // If the bird overlap any pipes, call 'restartGame'
         game.physics.arcade.overlap(this.bird, this.pipes, this.restartGame, null, this);      
