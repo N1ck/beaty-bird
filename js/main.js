@@ -28,10 +28,48 @@
         }
     });
 
-    $('.freq').on('change mousemove', function(event) {
-        console.log($(this).val());
-		freq = $(this).val();
-        sourceNode.frequency.value = freq;
+    function initSlider() {
+        $('.freq').on('change mousemove', function(event) {
+            freq = $(this).val();
+            sourceNode.frequency.value = freq;
+        });
+    }
+
+    $('.tool-group').on('change', function(event) {
+        var value = $(this).val();
+
+        if (value === 'slider') {
+            initSlider();
+        } else {
+            $('.freq').off('change mousemove');
+        }
     });
 
+    function initManual() {
+
+        getUserMedia({
+            audio: true
+        }, gotStream);
+    }
+
+    function getUserMedia(dictionary, callback) {
+        try {
+            navigator.getUserMedia =
+                navigator.getUserMedia ||
+                navigator.webkitGetUserMedia ||
+                navigator.mozGetUserMedia;
+
+            navigator.getUserMedia(dictionary, callback, error);
+        } catch (e) {
+            alert('getUserMedia threw exception :' + e);
+        }
+    }
+
+    function gotStream(stream) {
+        var mediaStreamSource = audioContext.createMediaStreamSource(stream);
+
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 2048;
+        mediaStreamSource.connect(analyser);
+    }
 }());
