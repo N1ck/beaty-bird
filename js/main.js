@@ -223,7 +223,7 @@
 
             var request = new XMLHttpRequest();
 
-            request.open("GET", "my-name.ogg", true);
+            request.open("GET", "my-name.mp3", true);
 
             request.responseType = "arraybuffer";
             request.onload = function() {
@@ -248,17 +248,17 @@
                         window.analyser.getByteTimeDomainData(array);
 
                         var volume = getAverageVolume(array);
-                        console.log(volume);
+                        // console.log(volume);
 
                         //var ac = autoCorrelate( buf, window.audioContext.sampleRate );
 
                         //var freq = ac === -1 ? 440 : ac;
 
                         // console.log(freq)
-                        updateGlobalFreq(volume, 120, 130);
+                        updateGlobalFreq(volume, 120, 135);
 
 
-                    }, 50);
+                    }, 100);
 
                 });
             }
