@@ -53,7 +53,12 @@ var mainState = {
 
         if (window.clapEnabled) {
             // Add gravity to the bird to make it fall
-            this.bird.body.gravity.y = 1000;
+            this.bird.body.gravity.y = 600;
+
+            if (window.jumpBird) {
+                this.jump();
+                window.jumpBird = false;
+            }
         } else {
             this.bird.body.gravity.y = 0;
 
@@ -69,7 +74,7 @@ var mainState = {
     // Make the bird jump
     jump: function() {
         // Add a vertical velocity to the bird
-        this.bird.body.velocity.y = -350;
+        this.bird.body.velocity.y = -250;
     },
 
     // Restart the game

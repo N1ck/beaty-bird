@@ -22,21 +22,25 @@
         var value = $(this).val();
 
         if (value === 'slider') {
-            // destoryClap();
+            destroyClap();
             destroyVoice();
             initSlider();
         } else if (value === 'voice') {
-            // destoryClap();
+            destroyClap();
             destroySlider();
             initVoice();
+        } else if (value === 'clap') {
+            destroyVoice();
+            destroySlider();
+            initClap();
         }
     });
 
-	initSlider();
+    initSlider();
 
-	getUserMedia({
-		audio: true
-	}, gotStream);
+    getUserMedia({
+        audio: true
+    }, gotStream);
 
     // ================================ SLIDER CONTROL ================================
 
@@ -147,49 +151,55 @@
     }
 
     function destroyVoice() {
-        window.clearInterval(intervalId);
+        if (window.intervalId) {
+            window.clearInterval(window.intervalId);
+        }
+
         window.mediaStreamSource.disconnect(window.analyser);
     }
 
     // ================================ CLAP CONTROL ================================
 
-    // function getAverageVolume(array) {
-    //     var values;
-    //     values = _.reduce(array, function(memo, num) {
-    //         return memo + num;
-    //     }, 0);
-    //     return values / array.length;
-    // };
-	//
-    // function initClap() {
-    //     window.mediaStreamSource.connect(window.analyser);
-	//
-    //     window.intervalId = setInterval(function() {
-    //         var array = new Uint8Array(analyser.frequencyBinCount),
-	// 			canClap = true,
-    //             volume,
-	// 			clapTimeoutId;
-	//
-    //         analyser.getByteFrequencyData(array);
-	//
-    //         volume = getAverageVolume(array) / 100;
-	//
-	// 		if (volume > 0.8 && canClap) {
-	// 			canClap = false;
-    //     		console.log('clap!');
-	//
-	// 			// Interval after next clap allowed
-	// 			clapTimeoutId = setTimeout(function () {
-	// 				canClap = true;
-	// 			}, 100);
-	// 		}
-	//
-    //     }, 50);
-    // }
-	//
-    // function destroyClap() {
-    //     window.clearInterval(intervalId);
-    //     window.mediaStreamSource.disconnect(window.analyser);
-    // }
+    function getAverageVolume(array) {
+        var values;
+        values = _.reduce(array, function(memo, num) {
+            return memo + num;
+        }, 0);
+        return values / array.length;
+    };
+
+    function initClap() {
+        window.mediaStreamSource.connect(window.analyser);
+		window.clapEnabled = true;
+
+        window.intervalId = setInterval(function() {
+            var canClap = true,
+                volume,
+                clapTimeoutId;
+
+            analyser.getByteFrequencyData(buf);
+            volume = getAverageVolume(buf) / 100;
+
+            if (volume > 0.3 && canClap) {
+                canClap = false;
+                window.jumpBird = true;
+
+                // Interval after next clap allowed
+                clapTimeoutId = setTimeout(function() {
+                    canClap = true;
+                }, 500);
+            }
+
+        }, 50);
+    }
+
+    function destroyClap() {
+        if (window.intervalId) {
+            window.clearInterval(window.intervalId);
+        }
+
+		window.clapEnabled = false;
+        window.mediaStreamSource.disconnect(window.analyser);
+    }
 
 }());
