@@ -1,17 +1,18 @@
 (function() {
     'use strict';
-    var started = false;
+    var started = false,
+        freq = $('.freq').val();
 
     window.audioContext = new AudioContext();
-
     window.sourceNode = audioContext.createOscillator();
-
     window.analyser = audioContext.createAnalyser();
+
 
     function start() {
         analyser.fftSize = 2048;
         sourceNode = audioContext.createOscillator();
         sourceNode.connect(analyser);
+        sourceNode.frequency.value = freq;
         analyser.connect(audioContext.destination);
     }
 
@@ -27,7 +28,9 @@
         }
     });
 
-    $('.test').on('change mousemove', function(event) {
+    $('.freq').on('change mousemove', function(event) {
+        console.log($(this).val());
+		freq = $(this).val();
         sourceNode.frequency.value = $(this).val();
     });
 
