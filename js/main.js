@@ -31,7 +31,7 @@
     $('.freq').on('change mousemove', function(event) {
         console.log($(this).val());
 		freq = $(this).val();
-        sourceNode.frequency.value = $(this).val();
+        sourceNode.frequency.value = freq;
     });
 
 }());
