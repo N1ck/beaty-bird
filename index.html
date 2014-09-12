@@ -7,16 +7,19 @@
         <script src="js/vendor/underscore.min.js"></script>
     </head>
 <body>
-    <div id="beatyGame"></div>
+    <div style="width:400px;margin:0 auto;">
+        <h1>Beaty Bird</h1>
+        <div id="beatyGame"></div>
 
-    <div>
-        <label><input class="tool-group" type="radio" name="tools" value="slider" checked> Slider</label>
-        <label><input class="tool-group" type="radio" name="tools" value="voice"> Voice</label>
-        <label><input class="tool-group" type="radio" name="tools" value="clap"> Clap</label>
-        <label><input class="tool-group" type="radio" name="tools" value="external"> External Audio</label>
+        <div>
+            <label><input class="tool-group" type="radio" name="tools" value="slider" checked> Slider</label>
+            <label><input class="tool-group" type="radio" name="tools" value="voice"> Voice</label>
+            <label><input class="tool-group" type="radio" name="tools" value="clap"> Clap</label>
+            <label><input class="tool-group" type="radio" name="tools" value="external"> External Audio</label>
+        </div>
+
+        <input class="freq" type="range" min="80" max="5000" step="40" style="width:400px;" value="440">
     </div>
-
-    <input class="freq" type="range" min="80" max="5000" step="40" style="width:400px;" value="440">
 
     <script src="js/vendor/phaser.min.js"></script>
     <script src="js/game.js"></script>
