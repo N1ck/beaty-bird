@@ -216,20 +216,20 @@
     }
 
     // ================================ EXTERNAL AUDIO ================================
-    
+
     function initExternalAudio() {
             var theBuffer;
             var isPlaying = false;
 
             var request = new XMLHttpRequest();
 
-            request.open("GET", "my-name.mp3", true);
+            request.open("GET", "my-name.ogg", true);
 
             request.responseType = "arraybuffer";
             request.onload = function() {
-              window.audioContext.decodeAudioData( request.response, function(buffer) { 
+              window.audioContext.decodeAudioData( request.response, function(buffer) {
                     theBuffer = buffer;
-                    
+
                     var now = window.audioContext.currentTime;
 
                     window.sourceNode = window.audioContext.createBufferSource();
@@ -244,9 +244,10 @@
 
                     window.intervalId = setInterval(function() {
 
-                        window.analyser.getByteTimeDomainData( buf );
+						var array = new Uint8Array(window.analyser.frequencyBinCount);
+                        window.analyser.getByteTimeDomainData(array);
 
-                        var volume = getAverageVolume(buf);
+                        var volume = getAverageVolume(array);
                         console.log(volume);
 
                         //var ac = autoCorrelate( buf, window.audioContext.sampleRate );
