@@ -22,32 +22,38 @@
         var value = $(this).val();
 
         if (value === 'slider') {
-            initSlider();
+            // destoryClap();
             destroyVoice();
+            initSlider();
         } else if (value === 'voice') {
-            initVoice();
+            // destoryClap();
             destroySlider();
+            initVoice();
         }
     });
 
-    initSlider();
+	initSlider();
+
+	getUserMedia({
+		audio: true
+	}, gotStream);
 
     // ================================ SLIDER CONTROL ================================
 
     function destroySlider() {
         $('.freq').off('change mousemove');
-		window.sourceNode.disconnect(window.analyser);
-		window.analyser.disconnect(audioContext.destination);
+        window.sourceNode.disconnect(window.analyser);
+        window.analyser.disconnect(audioContext.destination);
     }
 
     function initSlider() {
-		window.analyser.fftSize = 2048;
-		window.sourceNode = audioContext.createOscillator();
-		window.sourceNode.connect(window.analyser);
-		window.sourceNode.frequency.value = window.globalFreq;
-		window.analyser.connect(audioContext.destination);
+        window.analyser.fftSize = 2048;
+        window.sourceNode = audioContext.createOscillator();
+        window.sourceNode.connect(window.analyser);
+        window.sourceNode.frequency.value = window.globalFreq;
+        window.analyser.connect(audioContext.destination);
 
-		window.sourceNode.start(0);
+        window.sourceNode.start(0);
 
         $('.freq').on('change mousemove', function(event) {
             updateGlobalFreq($(this).val());
@@ -56,10 +62,6 @@
     }
 
     // ================================ VOICE CONTROL ================================
-
-	getUserMedia({
-		audio: true
-	}, gotStream);
 
     function getUserMedia(dictionary, callback) {
         try {
@@ -123,31 +125,71 @@
             return sampleRate / best_offset;
         }
         return -1;
-        //	var best_frequency = sampleRate/best_offset;
     }
 
     function error() {
         alert('error');
     }
 
-	function initVoice() {
-		window.mediaStreamSource.connect(window.analyser);
+    function initVoice() {
+        window.mediaStreamSource.connect(window.analyser);
 
-		window.intervalId = setInterval(function() {
-			var ac,
-				freq;
+        window.intervalId = setInterval(function() {
+            var ac,
+                freq;
 
-			window.analyser.getByteTimeDomainData(buf);
-			ac = autoCorrelate(buf, audioContext.sampleRate);
-			freq = ac === -1 ? 440 : ac;
+            window.analyser.getByteTimeDomainData(buf);
+            ac = autoCorrelate(buf, audioContext.sampleRate);
+            freq = ac === -1 ? 440 : ac;
 
-			updateGlobalFreq(freq);
-		}, 50);
-	}
+            updateGlobalFreq(freq);
+        }, 50);
+    }
 
-	function destroyVoice() {
-		window.clearInterval(intervalId);
-		window.mediaStreamSource.disconnect(window.analyser);
-	}
+    function destroyVoice() {
+        window.clearInterval(intervalId);
+        window.mediaStreamSource.disconnect(window.analyser);
+    }
+
+    // ================================ CLAP CONTROL ================================
+
+    // function getAverageVolume(array) {
+    //     var values;
+    //     values = _.reduce(array, function(memo, num) {
+    //         return memo + num;
+    //     }, 0);
+    //     return values / array.length;
+    // };
+	//
+    // function initClap() {
+    //     window.mediaStreamSource.connect(window.analyser);
+	//
+    //     window.intervalId = setInterval(function() {
+    //         var array = new Uint8Array(analyser.frequencyBinCount),
+	// 			canClap = true,
+    //             volume,
+	// 			clapTimeoutId;
+	//
+    //         analyser.getByteFrequencyData(array);
+	//
+    //         volume = getAverageVolume(array) / 100;
+	//
+	// 		if (volume > 0.8 && canClap) {
+	// 			canClap = false;
+    //     		console.log('clap!');
+	//
+	// 			// Interval after next clap allowed
+	// 			clapTimeoutId = setTimeout(function () {
+	// 				canClap = true;
+	// 			}, 100);
+	// 		}
+	//
+    //     }, 50);
+    // }
+	//
+    // function destroyClap() {
+    //     window.clearInterval(intervalId);
+    //     window.mediaStreamSource.disconnect(window.analyser);
+    // }
 
 }());

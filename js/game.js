@@ -51,9 +51,16 @@ var mainState = {
         if (this.bird.inWorld == false)
             this.restartGame();
 
-        // The frequency can be from 80 - 5000, so we find out the % and position the bird relative to that.
-        this.previousBirdPosition = this.bird.body.y;
-        this.bird.body.y = window.globalFreq;
+        if (window.clapEnabled) {
+            // Add gravity to the bird to make it fall
+            this.bird.body.gravity.y = 1000;
+        } else {
+            this.bird.body.gravity.y = 0;
+
+            // The frequency can be from 80 - 5000, so we find out the % and position the bird relative to that.
+            this.previousBirdPosition = this.bird.body.y;
+            this.bird.body.y = window.globalFreq;
+        }
 
         // If the bird overlap any pipes, call 'restartGame'
         game.physics.arcade.overlap(this.bird, this.pipes, this.restartGame, null, this);
