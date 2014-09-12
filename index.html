@@ -5,6 +5,7 @@
         <title>Beaty Bird</title>
         <script src="js/vendor/jquery.min.js"></script>
         <script src="js/vendor/underscore.min.js"></script>
+        <link rel="stylesheet" href="assets/main.css">
     </head>
 <body>
     <div style="width:400px;margin:0 auto;">
@@ -12,10 +13,10 @@
         <div id="beatyGame"></div>
 
         <div>
-            <label><input class="tool-group" type="radio" name="tools" value="slider" checked> Slider</label>
-            <label><input class="tool-group" type="radio" name="tools" value="voice"> Voice</label>
-            <label><input class="tool-group" type="radio" name="tools" value="clap"> Clap</label>
-            <label><input class="tool-group" type="radio" name="tools" value="external"> External Audio</label>
+            <label class="tool-group-label"><input class="tool-group" type="radio" name="tools" value="slider" checked> Slider</label>
+            <label class="tool-group-label"><input class="tool-group" type="radio" name="tools" value="voice"> Voice</label>
+            <label class="tool-group-label"><input class="tool-group" type="radio" name="tools" value="clap"> Clap</label>
+            <label class="tool-group-label"><input class="tool-group" type="radio" name="tools" value="external"> External</label>
         </div>
 
         <input class="freq" type="range" min="80" max="5000" step="40" style="width:400px;" value="440">
