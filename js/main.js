@@ -6,7 +6,6 @@
 
     updateGlobalFreq(freq);
     window.audioContext = new AudioContext();
-    window.sourceNode = audioContext.createOscillator();
     window.analyser = audioContext.createAnalyser();
 
     function updateGlobalFreq(freq) {
@@ -19,38 +18,48 @@
         window.globalFreq = (freq - 80) / (5000 - 80) * 440;
     }
 
+    $('.tool-group').on('change', function(event) {
+        var value = $(this).val();
+
+        if (value === 'slider') {
+            initSlider();
+            destroyVoice();
+        } else if (value === 'voice') {
+            initVoice();
+            destroySlider();
+        }
+    });
+
+    initSlider();
+
     // ================================ SLIDER CONTROL ================================
 
-    // function start() {
-    //     analyser.fftSize = 2048;
-    //     sourceNode = audioContext.createOscillator();
-    //     sourceNode.connect(analyser);
-    //     sourceNode.frequency.value = window.globalFreq;
-    //     analyser.connect(audioContext.destination);
-    // }
-	//
-    // $(document).keypress(function(e) {
-    //     if (e.keyCode === 32) {
-    //         if (started) {
-    //             sourceNode.stop(0);
-    //         } else {
-    //             start();
-    //             sourceNode.start(0);
-    //         }
-    //         started = !started;
-    //     }
-    // });
-	//
-    // $('.freq').on('change mousemove', function(event) {
-    //     updateGlobalFreq($(this).val());
-    //     sourceNode.frequency.value = window.globalFreq;
-    // });
+    function destroySlider() {
+        $('.freq').off('change mousemove');
+		window.sourceNode.disconnect(window.analyser);
+		window.analyser.disconnect(audioContext.destination);
+    }
+
+    function initSlider() {
+		window.analyser.fftSize = 2048;
+		window.sourceNode = audioContext.createOscillator();
+		window.sourceNode.connect(window.analyser);
+		window.sourceNode.frequency.value = window.globalFreq;
+		window.analyser.connect(audioContext.destination);
+
+		window.sourceNode.start(0);
+
+        $('.freq').on('change mousemove', function(event) {
+            updateGlobalFreq($(this).val());
+            sourceNode.frequency.value = window.globalFreq;
+        });
+    }
 
     // ================================ VOICE CONTROL ================================
 
-    getUserMedia({
-        audio: true
-    }, gotStream);
+	getUserMedia({
+		audio: true
+	}, gotStream);
 
     function getUserMedia(dictionary, callback) {
         try {
@@ -66,19 +75,7 @@
     }
 
     function gotStream(stream) {
-        var mediaStreamSource = audioContext.createMediaStreamSource(stream);
-        mediaStreamSource.connect(analyser);
-
-        setInterval(function() {
-            var ac,
-                freq;
-
-            analyser.getByteTimeDomainData(buf);
-            ac = autoCorrelate(buf, audioContext.sampleRate);
-            freq = ac === -1 ? 440 : ac;
-
-            updateGlobalFreq(freq);
-        }, 50);
+        window.mediaStreamSource = audioContext.createMediaStreamSource(stream);
     }
 
     function autoCorrelate(buf, sampleRate) {
@@ -132,5 +129,25 @@
     function error() {
         alert('error');
     }
+
+	function initVoice() {
+		window.mediaStreamSource.connect(window.analyser);
+
+		window.intervalId = setInterval(function() {
+			var ac,
+				freq;
+
+			window.analyser.getByteTimeDomainData(buf);
+			ac = autoCorrelate(buf, audioContext.sampleRate);
+			freq = ac === -1 ? 440 : ac;
+
+			updateGlobalFreq(freq);
+		}, 50);
+	}
+
+	function destroyVoice() {
+		window.clearInterval(intervalId);
+		window.mediaStreamSource.disconnect(window.analyser);
+	}
 
 }());
